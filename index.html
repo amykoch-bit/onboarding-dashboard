@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConductorOne — Onboarding Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0efe9;
+    --text: #1a1a1a;
+    --text2: #6b6b6b;
+    --text3: #9b9b9b;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --success: #2d7a3a;
+    --success-bg: #eaf3de;
+    --warning: #c57700;
+    --warning-bg: #faeeda;
+    --danger: #a32d2d;
+    --danger-bg: #fcebeb;
+    --info: #185FA5;
+    --info-bg: #E6F1FB;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #f0efe9;
+      --text2: #9b9b9b;
+      --text3: #6b6b6b;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --success: #7ec98a;
+      --success-bg: #1a3320;
+      --warning: #f0b84a;
+      --warning-bg: #2e2010;
+      --danger: #f09595;
+      --danger-bg: #2e1010;
+      --info: #85B7EB;
+      --info-bg: #0c1e33;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
+  .shell { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+  .page-header h1 { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .logo { width: 28px; height: 28px; background: var(--text); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .logo i { color: var(--bg); font-size: 16px; }
+
+  .tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; border-bottom: 0.5px solid var(--border); }
+  .tab { font-size: 13px; padding: 7px 14px; cursor: pointer; background: none; border: none; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -0.5px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+
+  .btn { background: transparent; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--text); display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; font-family: inherit; }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: transparent; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-danger { color: var(--danger); border-color: var(--danger-bg); }
+  .btn-danger:hover { background: var(--danger-bg); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: var(--bg2); border-radius: var(--radius); padding: 0.85rem 1rem; }
+  .stat-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .stat-val { font-size: 22px; font-weight: 600; }
+  .stat-val.warn { color: var(--warning); }
+  .stat-val.ok { color: var(--success); }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .top-bar h2 { font-size: 16px; font-weight: 500; }
+
+  .filters { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 99px; border: 0.5px solid var(--border); cursor: pointer; background: transparent; color: var(--text2); transition: all 0.15s; font-family: inherit; }
+  .pill.active { background: var(--text); color: var(--bg); border-color: transparent; }
+
+  .hire-list { display: flex; flex-direction: column; gap: 10px; }
+  .hire-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; cursor: pointer; transition: border-color 0.15s; }
+  .hire-card:hover { border-color: var(--border2); }
+  .hire-card.expanded { border-color: var(--text3); }
+  .hire-header { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .av-SF { background: #E6F1FB; color: #185FA5; }
+  .av-PDX { background: #E1F5EE; color: #0F6E56; }
+  .av-Remote { background: #FAEEDA; color: #854F0B; }
+  .hire-meta { flex: 1; min-width: 0; }
+  .hire-name { font-weight: 500; font-size: 14px; }
+  .hire-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; border: 0.5px solid var(--border); white-space: nowrap; }
+  .badge-SF { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+  .badge-PDX { background: #E1F5EE; color: #0F6E56; border-color: #9FE1CB; }
+  .badge-Remote { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+  .days-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+  .days-soon { background: var(--warning-bg); color: var(--warning); }
+  .days-ok { background: var(--success-bg); color: var(--success); }
+  .days-past { background: var(--bg2); color: var(--text2); }
+  .days-urgent { background: var(--danger-bg); color: var(--danger); }
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar { width: 80px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: var(--text); transition: width 0.3s; }
+  .progress-fill.done { background: var(--success); }
+  .pct { font-size: 12px; color: var(--text2); min-width: 28px; text-align: right; }
+
+  .checklist { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); display: none; }
+  .hire-card.expanded .checklist { display: block; }
+  .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 1rem; }
+  .check-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius); border: 0.5px solid var(--border); font-size: 13px; cursor: pointer; user-select: none; transition: background 0.1s; }
+  .check-item:hover { background: var(--bg2); }
+  .check-item input[type=checkbox] { cursor: pointer; width: 15px; height: 15px; accent-color: var(--text); flex-shrink: 0; }
+  .check-item.checked { color: var(--text2); text-decoration: line-through; }
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .action-row .btn { font-size: 12px; padding: 5px 11px; }
+
+  .status-panel { margin-top: 10px; background: var(--bg2); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; display: none; }
+  .status-panel.visible { display: block; }
+  .status-line { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; color: var(--text2); line-height: 1.5; }
+  .status-line:last-child { margin-bottom: 0; }
+  .status-line.done { color: var(--success); }
+  .status-line.error { color: var(--danger); }
+  .status-line.running { color: var(--text); }
+  .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; margin-top: 2px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .modal-wrap { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+  .modal-wrap.open { display: flex; }
+  .modal { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; width: 460px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+  .modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 1.25rem; }
+  .field { margin-bottom: 12px; }
+  .field label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 4px; }
+  .field input, .field select { width: 100%; padding: 8px 10px; font-size: 14px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: inherit; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--text3); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.25rem; }
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin: 1rem 0 0.5rem; }
+  .tip { font-size: 12px; color: var(--text2); padding: 0.6rem 0.85rem; background: var(--bg2); border-radius: var(--radius); display: flex; align-items: center; gap: 6px; margin-bottom: 1rem; }
+
+  .term-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .term-actions { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .term-actions .btn { font-size: 12px; padding: 5px 11px; }
+
+  .empty { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 14px; }
+
+  .settings-section { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .settings-section h3 { font-size: 14px; font-weight: 500; margin-bottom: 1rem; }
+  .setting-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .setting-row label { font-size: 13px; color: var(--text2); min-width: 140px; }
+  .setting-row input { flex: 1; padding: 7px 10px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: inherit; }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="page-header">
+    <h1>
+      <div class="logo"><i class="ti ti-users"></i></div>
+      Onboarding
+    </h1>
+    <span style="font-size:12px;color:var(--text3)">ConductorOne People Ops</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('onboarding',this)"><i class="ti ti-users"></i> Onboarding</button>
+    <button class="tab" onclick="switchTab('termination',this)"><i class="ti ti-door-exit"></i> Terminations</button>
+    <button class="tab" onclick="switchTab('settings',this)"><i class="ti ti-settings"></i> Settings</button>
+  </div>
+
+  <!-- ONBOARDING TAB -->
+  <div id="tab-onboarding">
+    <div class="top-bar">
+      <h2>Active hires</h2>
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="ti ti-plus"></i> Add new hire</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="filters">
+      <button class="pill active" onclick="setFilter('all',this)">All</button>
+      <button class="pill" onclick="setFilter('SF',this)">SF office</button>
+      <button class="pill" onclick="setFilter('PDX',this)">PDX office</button>
+      <button class="pill" onclick="setFilter('Remote',this)">Remote</button>
+      <button class="pill" onclick="setFilter('incomplete',this)">Needs attention</button>
+    </div>
+    <div class="hire-list" id="hireList"></div>
+  </div>
+
+  <!-- TERMINATION TAB -->
+  <div id="tab-termination" style="display:none">
+    <div class="top-bar">
+      <h2>Offboarding</h2>
+      <button class="btn btn-danger" onclick="openTermModal()"><i class="ti ti-user-minus"></i> Offboard employee</button>
+    </div>
+    <div id="termList" style="display:flex;flex-direction:column;gap:10px"><div class="empty">No active offboardings.</div></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tab-settings" style="display:none">
+    <div class="settings-section">
+      <h3>Notion</h3>
+      <div class="setting-row">
+        <label>Database ID</label>
+        <input id="s-notion-db" placeholder="32-character database ID" oninput="saveSettings()" />
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">Found in your Notion database URL. Used to auto-add new hires to your onboarding board.</div>
+    </div>
+    <div class="settings-section">
+      <h3>Team emails</h3>
+      <div class="setting-row"><label>Amy (you)</label><input id="s-amy" placeholder="amy@conductor.one" oninput="saveSettings()" /></div>
+      <div class="setting-row"><label>Jenni</label><input id="s-jenni" placeholder="jenni@conductor.one" oninput="saveSettings()" /></div>
+      <div class="setting-row"><label>Brian</label><input id="s-brian" placeholder="brian@conductor.one" oninput="saveSettings()" /></div>
+      <div class="setting-row"><label>Liz (PDX)</label><input id="s-liz" placeholder="liz@conductor.one" oninput="saveSettings()" /></div>
+    </div>
+    <div class="settings-section">
+      <h3>Hardware return link</h3>
+      <div class="setting-row">
+        <label>NetUniverse return URL</label>
+        <input id="s-return-url" placeholder="https://..." oninput="saveSettings()" />
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-top:8px"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Settings are saved to your browser only — never sent anywhere.</div>
+  </div>
+</div>
+
+<!-- ADD HIRE MODAL -->
+<div class="modal-wrap" id="addModal" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>Add new hire</h2>
+    <div class="field"><label>Full name</label><input id="f-name" placeholder="e.g. Jordan Rivera" /></div>
+    <div class="field-row">
+      <div class="field"><label>Start date</label><input id="f-start" type="date" /></div>
+      <div class="field"><label>Birthday</label><input id="f-bday" type="date" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Location</label>
+        <select id="f-loc"><option value="SF">SF office</option><option value="PDX">PDX office</option><option value="Remote">Remote</option></select>
+      </div>
+      <div class="field"><label>Manager name</label><input id="f-mgr" placeholder="e.g. Brian Chen" /></div>
+    </div>
+    <div class="field"><label>Role / title</label><input id="f-role" placeholder="e.g. Software Engineer" /></div>
+    <div class="field"><label>Personal email</label><input id="f-email" type="email" placeholder="personal@email.com" /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addHire()"><i class="ti ti-check"></i> Add &amp; start onboarding</button>
+    </div>
+  </div>
+</div>
+
+<!-- TERM MODAL -->
+<div class="modal-wrap" id="termModal" onclick="if(event.target===this)closeTermModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>Offboard employee</h2>
+    <div class="field"><label>Full name</label><input id="t-name" placeholder="e.g. Alex Johnson" /></div>
+    <div class="field"><label>Work email</label><input id="t-email" type="email" placeholder="alex@conductor.one" /></div>
+    <div class="field"><label>Personal email (for laptop return)</label><input id="t-personal" type="email" placeholder="alex@gmail.com" /></div>
+    <div class="field"><label>Last day</label><input id="t-last" type="date" /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeTermModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="addTermination()"><i class="ti ti-door-exit"></i> Begin offboarding</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { id:'slack',    label:'Slack notified',   icon:'ti-brand-slack' },
+  { id:'notion',   label:'Notion board',      icon:'ti-layout-kanban' },
+  { id:'cleary',   label:'Cleary journey',    icon:'ti-route' },
+  { id:'checkr',   label:'Checkr sent',       icon:'ti-shield-check' },
+  { id:'calendar', label:'Cal invites',        icon:'ti-calendar' },
+  { id:'union',    label:'Union Station',      icon:'ti-building' },
+  { id:'sequoia',  label:'Sequoia/Niural',    icon:'ti-id-badge' },
+  { id:'hardware', label:'Hardware ordered',  icon:'ti-device-laptop' },
+];
+
+const MCP_NOTION = 'https://mcp.notion.com/mcp';
+const MCP_GCAL   = 'https://calendarmcp.googleapis.com/mcp/v1';
+const MCP_SLACK  = 'https://mcp.slack.com/mcp';
+const MCP_GMAIL  = 'https://gmailmcp.googleapis.com/mcp/v1';
+const MODEL      = 'claude-sonnet-4-20250514';
+const SLACK_CHANNEL = '#new-hires';
+
+// Settings — persisted in localStorage
+let settings = {};
+function loadSettings() {
+  try { settings = JSON.parse(localStorage.getItem('c1-onboarding-settings') || '{}'); } catch(e) { settings = {}; }
+  ['notion-db','amy','jenni','brian','liz','return-url'].forEach(k => {
+    const el = document.getElementById('s-' + k);
+    if (el && settings[k]) el.value = settings[k];
+  });
+}
+function saveSettings() {
+  ['notion-db','amy','jenni','brian','liz','return-url'].forEach(k => {
+    const el = document.getElementById('s-' + k);
+    if (el) settings[k] = el.value;
+  });
+  localStorage.setItem('c1-onboarding-settings', JSON.stringify(settings));
+}
+
+// Hire data — persisted in localStorage
+let hires = [];
+let terminations = [];
+let nextId = 1;
+function loadData() {
+  try {
+    const d = JSON.parse(localStorage.getItem('c1-onboarding-data') || 'null');
+    if (d) { hires = d.hires||[]; terminations = d.terminations||[]; nextId = d.nextId||1; }
+  } catch(e) {}
+}
+function saveData() {
+  localStorage.setItem('c1-onboarding-data', JSON.stringify({ hires, terminations, nextId }));
+}
+
+let activeFilter = 'all';
+let expanded = null;
+
+function initials(n){ return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+function daysUntil(d){ const n=new Date(); n.setHours(0,0,0,0); const t=new Date(d); t.setHours(0,0,0,0); return Math.round((t-n)/86400000); }
+function pct(steps){ return Math.round(Object.values(steps).filter(Boolean).length/STEPS.length*100); }
+
+function switchTab(tab, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['onboarding','termination','settings'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
+  });
+}
+
+function renderStats(){
+  const t=hires.length, u=hires.filter(h=>{const d=daysUntil(h.start);return d>=0&&d<=7;}).length,
+        i=hires.filter(h=>pct(h.steps)<100).length, r=hires.filter(h=>pct(h.steps)===100).length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-label">Total active</div><div class="stat-val">${t}</div></div>
+    <div class="stat"><div class="stat-label">Starting this week</div><div class="stat-val warn">${u}</div></div>
+    <div class="stat"><div class="stat-label">Needs attention</div><div class="stat-val warn">${i}</div></div>
+    <div class="stat"><div class="stat-label">Fully ready</div><div class="stat-val ok">${r}</div></div>`;
+}
+
+function renderList(){
+  const el=document.getElementById('hireList');
+  let list=[...hires];
+  if(activeFilter==='SF') list=list.filter(h=>h.loc==='SF');
+  else if(activeFilter==='PDX') list=list.filter(h=>h.loc==='PDX');
+  else if(activeFilter==='Remote') list=list.filter(h=>h.loc==='Remote');
+  else if(activeFilter==='incomplete') list=list.filter(h=>pct(h.steps)<100);
+  list.sort((a,b)=>new Date(a.start)-new Date(b.start));
+  if(!list.length){ el.innerHTML='<div class="empty">No hires match this filter.</div>'; return; }
+  el.innerHTML=list.map(h=>{
+    const d=daysUntil(h.start), p=pct(h.steps);
+    const dl=d<0?`Started ${Math.abs(d)}d ago`:d===0?'Starts today!':`${d}d until start`;
+    const dc=d<0?'days-past':d<=3?'days-urgent':d<=7?'days-soon':'days-ok';
+    const isExp=expanded===h.id;
+    return `<div class="hire-card${isExp?' expanded':''}" id="card-${h.id}" onclick="toggleCard(${h.id})">
+      <div class="hire-header">
+        <div class="avatar av-${h.loc}">${initials(h.name)}</div>
+        <div class="hire-meta">
+          <div class="hire-name">${h.name}</div>
+          <div class="hire-sub">${h.role||'Role TBD'} · ${new Date(h.start).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <span class="badge badge-${h.loc}">${h.loc}</span>
+          <span class="days-badge ${dc}">${dl}</span>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill${p===100?' done':''}" style="width:${p}%"></div></div>
+            <span class="pct">${p}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="checklist">
+        <div class="checklist-grid">${STEPS.map(s=>`
+          <label class="check-item${h.steps[s.id]?' checked':''}" onclick="event.stopPropagation()">
+            <input type="checkbox" ${h.steps[s.id]?'checked':''} onchange="toggleStep(${h.id},'${s.id}',this.checked)" />
+            <span style="display:flex;align-items:center;gap:5px;flex:1"><i class="ti ${s.icon}" style="font-size:14px;color:var(--text2)"></i>${s.label}</span>
+          </label>`).join('')}
+        </div>
+        <div class="action-row">
+          <button class="btn" onclick="event.stopPropagation();runCalInvites(${h.id})"><i class="ti ti-calendar"></i> Create cal invites</button>
+          <button class="btn" onclick="event.stopPropagation();runNotionAdd(${h.id})"><i class="ti ti-layout-kanban"></i> Add to Notion</button>
+          <button class="btn" onclick="event.stopPropagation();runSlackMsg(${h.id})"><i class="ti ti-brand-slack"></i> Post to #new-hires</button>
+          <button class="btn" onclick="event.stopPropagation();runAISummary(${h.id})"><i class="ti ti-sparkles"></i> What's missing?</button>
+          <button class="btn btn-danger" style="margin-left:auto" onclick="event.stopPropagation();removeHire(${h.id})"><i class="ti ti-trash"></i></button>
+        </div>
+        <div class="status-panel" id="sp-${h.id}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id){ expanded=expanded===id?null:id; renderList(); }
+function toggleStep(hireId,stepId,val){
+  const h=hires.find(x=>x.id===hireId);
+  if(h){ h.steps[stepId]=val; saveData(); renderStats(); renderList(); }
+}
+function setFilter(f,btn){ activeFilter=f; document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); renderList(); }
+function removeHire(id){ if(!confirm('Remove this hire?')) return; hires=hires.filter(x=>x.id!==id); if(expanded===id)expanded=null; saveData(); renderStats();renderList(); }
+
+function showStatus(id,lines,prefix='sp'){
+  const p=document.getElementById(`${prefix}-${id}`);
+  if(!p) return;
+  p.classList.add('visible');
+  p.innerHTML=lines.map(l=>`<div class="status-line ${l.state||''}">
+    <span class="${l.state==='running'?'spin':'ti ti-'+(l.state==='done'?'check':'alert-circle')}" ${l.state==='running'?'':''}></span>
+    ${l.text}
+  </div>`).join('');
+}
+
+async function callClaude(userMsg, mcpServers=[]){
+  const body={model:MODEL,max_tokens:1000,messages:[{role:'user',content:userMsg}]};
+  if(mcpServers.length) body.mcp_servers=mcpServers;
+  const r=await fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error(`API error ${r.status}`);
+  return r.json();
+}
+
+function email(person){ return settings[person] || `${person}@conductor.one`; }
+
+async function runCalInvites(id){
+  const h=hires.find(x=>x.id===id); if(!h) return;
+  const hasPDX=h.loc==='PDX';
+  showStatus(id,[{state:'running',text:'Creating all three calendar invites...'}]);
+  try {
+    const prompt=`Create three separate Google Calendar events for ${h.name} who starts ${h.start}:
+1. All-day event on ${h.start}: "${h.name} - First Day at ConductorOne". Attendees: ${email('amy')}, ${email('jenni')}, ${email('brian')}, ${(h.mgr||'').toLowerCase().replace(' ','.')}@conductor.one
+2. Annual recurring all-day event on ${h.start}: "${h.name} Work Anniversary". Attendees: ${email('amy')}, ${email('jenni')}${hasPDX?', '+email('liz'):''}. Repeat yearly.
+3. ${h.bday?`Annual recurring all-day event on ${h.bday}: "${h.name}'s Birthday". Attendees: ${email('amy')}, ${email('jenni')}${hasPDX?', '+email('liz'):''}. Repeat yearly.`:`Reminder on ${h.start}: "Collect ${h.name}'s birthday for calendar invite"`}
+Create all three now.`;
+    const data=await callClaude(prompt,[{type:'url',url:MCP_GCAL,name:'gcal'}]);
+    const ok=data.content.some(b=>b.type==='mcp_tool_result');
+    showStatus(id,[
+      {state:'done',text:'Start day invite created'},
+      {state:ok?'done':'error',text:'Anniversary invite '+(ok?'created':'failed')},
+      {state:ok?'done':'error',text:'Birthday invite '+(ok?'created':'failed')},
+    ]);
+    if(ok){ const hh=hires.find(x=>x.id===id); if(hh){hh.steps.calendar=true; saveData(); renderStats();renderList();} }
+  } catch(e){ showStatus(id,[{state:'error',text:e.message}]); }
+}
+
+async function runNotionAdd(id){
+  const h=hires.find(x=>x.id===id); if(!h) return;
+  showStatus(id,[{state:'running',text:'Adding to Notion onboarding tracker...'}]);
+  const dbId = settings['notion-db'];
+  try {
+    const prompt=`Add a new page to the Notion onboarding database${dbId?` with ID ${dbId}`:''}:
+- Name: "${h.name}"
+- Start Date: ${h.start}
+- Location: ${h.loc}
+- Stage: "Pre-boarding"
+- Role: "${h.role||''}"
+- Manager: "${h.mgr||''}"
+- Personal Email: "${h.email||''}"
+- Cleary ✓: unchecked
+- Checkr ✓: unchecked
+- Cal Invites ✓: unchecked
+- Union Station ✓: unchecked
+- Sequoia/Niural ✓: unchecked
+- Net Universe ✓: unchecked`;
+    const data=await callClaude(prompt,[{type:'url',url:MCP_NOTION,name:'notion'}]);
+    const ok=data.content.some(b=>b.type==='mcp_tool_result');
+    showStatus(id,[{state:ok?'done':'error',text:ok?`${h.name} added to Notion`:'Notion add failed — check your database ID in Settings'}]);
+    if(ok){ const hh=hires.find(x=>x.id===id); if(hh){hh.steps.notion=true; saveData(); renderStats();renderList();} }
+  } catch(e){ showStatus(id,[{state:'error',text:e.message}]); }
+}
+
+async function runSlackMsg(id){
+  const h=hires.find(x=>x.id===id); if(!h) return;
+  showStatus(id,[{state:'running',text:`Posting to ${SLACK_CHANNEL}...`}]);
+  const missing=STEPS.filter(s=>!h.steps[s.id]).map(s=>s.label);
+  const msg=missing.length
+    ?`📋 Onboarding update for *${h.name}* (${h.role||'role TBD'}, ${h.loc}, starts ${new Date(h.start).toLocaleDateString('en-US',{month:'short',day:'numeric'})})\n\nStill pending:\n${missing.map(m=>`• ${m}`).join('\n')}`
+    :`✅ *${h.name}* (${h.role||''}, ${h.loc}) is fully onboarded for their start date of ${new Date(h.start).toLocaleDateString('en-US',{month:'short',day:'numeric'})}.`;
+  try {
+    const data=await callClaude(`Post this to the ${SLACK_CHANNEL} Slack channel:\n\n${msg}`,[{type:'url',url:MCP_SLACK,name:'slack'}]);
+    const ok=data.content.some(b=>b.type==='mcp_tool_result');
+    showStatus(id,[{state:ok?'done':'error',text:ok?`Posted to ${SLACK_CHANNEL}`:'Slack failed'}]);
+  } catch(e){ showStatus(id,[{state:'error',text:e.message}]); }
+}
+
+async function runAISummary(id){
+  const h=hires.find(x=>x.id===id); if(!h) return;
+  const missing=STEPS.filter(s=>!h.steps[s.id]).map(s=>s.label);
+  if(!missing.length){ showStatus(id,[{state:'done',text:`All steps complete — ${h.name} is ready!`}]); return; }
+  const sp=document.getElementById(`sp-${id}`);
+  if(sp){ sp.classList.add('visible'); sp.innerHTML='<div class="status-line running"><span class="spin"></span>Analyzing...</div>'; }
+  try {
+    const d=daysUntil(h.start);
+    const data=await callClaude(`Onboarding assistant. ${h.name} (${h.role}, ${h.loc}) starts in ${d} days. Manager: ${h.mgr}. Incomplete: ${missing.join(', ')}. Give a 2–3 sentence prioritization. No bullets.`);
+    const text=data.content?.find(b=>b.type==='text')?.text||'Could not get summary.';
+    if(sp) sp.innerHTML=`<div class="status-line" style="color:var(--text);line-height:1.6">${text}</div>`;
+  } catch(e){
+    if(sp) sp.innerHTML=`<div class="status-line error">${e.message}</div>`;
+  }
+}
+
+// Add hire
+function openAddModal(){ document.getElementById('addModal').classList.add('open'); }
+function closeAddModal(){ document.getElementById('addModal').classList.remove('open'); }
+
+async function addHire(){
+  const name=document.getElementById('f-name').value.trim();
+  const start=document.getElementById('f-start').value;
+  if(!name||!start){ alert('Name and start date are required.'); return; }
+  const newHire={
+    id:nextId++,
+    name,
+    start,
+    bday:document.getElementById('f-bday').value,
+    loc:document.getElementById('f-loc').value,
+    mgr:document.getElementById('f-mgr').value.trim(),
+    role:document.getElementById('f-role').value.trim(),
+    email:document.getElementById('f-email').value.trim(),
+    steps:{slack:false,notion:false,cleary:false,checkr:false,calendar:false,union:false,sequoia:false,hardware:false}
+  };
+  hires.push(newHire);
+  closeAddModal();
+  ['f-name','f-start','f-bday','f-mgr','f-role','f-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  expanded=newHire.id;
+  saveData(); renderStats(); renderList();
+  // Auto-kick Notion + Slack
+  setTimeout(()=>runNotionAdd(newHire.id), 400);
+  setTimeout(async()=>{
+    try {
+      const msg=`🎉 New hire: *${name}* (${newHire.role||'role TBD'}, ${newHire.loc}) starts ${new Date(start).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}. Manager: ${newHire.mgr||'TBD'}.`;
+      const data=await callClaude(`Post to ${SLACK_CHANNEL}:\n\n${msg}`,[{type:'url',url:MCP_SLACK,name:'slack'}]);
+      if(data.content.some(b=>b.type==='mcp_tool_result')){ newHire.steps.slack=true; saveData(); renderStats(); renderList(); }
+    } catch(e){}
+  }, 1600);
+}
+
+// Terminations
+function openTermModal(){ document.getElementById('termModal').classList.add('open'); }
+function closeTermModal(){ document.getElementById('termModal').classList.remove('open'); }
+
+function addTermination(){
+  const name=document.getElementById('t-name').value.trim();
+  const last=document.getElementById('t-last').value;
+  if(!name||!last){ alert('Name and last day are required.'); return; }
+  terminations.push({
+    id:nextId++,
+    name,
+    email:document.getElementById('t-email').value.trim(),
+    personal:document.getElementById('t-personal').value.trim(),
+    last,
+    steps:{laptop:false,checkr:false}
+  });
+  closeTermModal();
+  ['t-name','t-email','t-personal','t-last'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  saveData(); renderTermList();
+}
+
+function renderTermList(){
+  const el=document.getElementById('termList');
+  if(!terminations.length){ el.innerHTML='<div class="empty">No active offboardings.</div>'; return; }
+  el.innerHTML=terminations.map(t=>`
+    <div class="term-card" id="tcard-${t.id}">
+      <div class="hire-header">
+        <div class="avatar" style="background:var(--danger-bg);color:var(--danger)">${initials(t.name)}</div>
+        <div class="hire-meta">
+          <div class="hire-name">${t.name}</div>
+          <div class="hire-sub">Last day: ${new Date(t.last).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${t.steps.laptop?'<span class="badge" style="background:var(--success-bg);color:var(--success)">Laptop sent</span>':''}
+          ${t.steps.checkr?'<span class="badge" style="background:var(--success-bg);color:var(--success)">Checkr done</span>':''}
+        </div>
+      </div>
+      <div class="term-actions">
+        <button class="btn" onclick="runLaptopReturn(${t.id})"><i class="ti ti-device-laptop"></i> Email laptop return</button>
+        <button class="btn" onclick="runCheckrRemove(${t.id})"><i class="ti ti-shield-off"></i> Post Checkr removal</button>
+        <button class="btn btn-danger" style="margin-left:auto" onclick="removeTerm(${t.id})"><i class="ti ti-trash"></i></button>
+      </div>
+      <div class="status-panel" id="tsp-${t.id}"></div>
+    </div>`).join('');
+}
+
+async function runLaptopReturn(tid){
+  const t=terminations.find(x=>x.id===tid); if(!t) return;
+  showStatus(tid,[{state:'running',text:'Sending laptop return email...'}],'tsp');
+  const returnUrl=settings['return-url']||'https://www.netuniverse.com/return';
+  try {
+    const data=await callClaude(`Send an email to ${t.personal||t.email} with subject "Action needed: Return your ConductorOne equipment". Ask them to return their laptop and YubiKey using this link: ${returnUrl}. Mention last day was ${t.last}. Warm and professional tone.`,[{type:'url',url:MCP_GMAIL,name:'gmail'}]);
+    const ok=data.content.some(b=>b.type==='mcp_tool_result');
+    showStatus(tid,[{state:ok?'done':'error',text:ok?`Email sent to ${t.personal||t.email}`:'Gmail failed'}],'tsp');
+    if(ok){ t.steps.laptop=true; saveData(); renderTermList(); }
+  } catch(e){ showStatus(tid,[{state:'error',text:e.message}],'tsp'); }
+}
+
+async function runCheckrRemove(tid){
+  const t=terminations.find(x=>x.id===tid); if(!t) return;
+  showStatus(tid,[{state:'running',text:`Posting to ${SLACK_CHANNEL}...`}],'tsp');
+  const msg=`🔔 Offboarding: Please remove *${t.name}* (${t.email}) from Checkr recurring background checks. Last day: ${new Date(t.last).toLocaleDateString('en-US',{month:'short',day:'numeric'})}.`;
+  try {
+    const data=await callClaude(`Post to ${SLACK_CHANNEL}:\n\n${msg}`,[{type:'url',url:MCP_SLACK,name:'slack'}]);
+    const ok=data.content.some(b=>b.type==='mcp_tool_result');
+    showStatus(tid,[{state:ok?'done':'error',text:ok?`Posted to ${SLACK_CHANNEL}`:'Slack failed'}],'tsp');
+    if(ok){ t.steps.checkr=true; saveData(); renderTermList(); }
+  } catch(e){ showStatus(tid,[{state:'error',text:e.message}],'tsp'); }
+}
+
+function removeTerm(id){ if(!confirm('Remove offboarding?')) return; terminations=terminations.filter(x=>x.id!==id); saveData(); renderTermList(); }
+
+// Init
+loadSettings();
+loadData();
+renderStats();
+renderList();
+renderTermList();
+</script>
+</body>
+</html>
